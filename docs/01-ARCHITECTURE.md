@@ -2,7 +2,7 @@
 
 ## 1. Shape
 
-A single Next.js 15 App Router application. No separate backend, no microservices.
+A single Next.js 16 App Router application. No separate backend, no microservices.
 
 ```
 Browser (RSC + client islands)
@@ -22,7 +22,7 @@ file that could reach the client. All AI work happens in `lib/ai/*`, which is ma
 
 | Layer | Choice | Version pin |
 |---|---|---|
-| Framework | Next.js App Router | 15.x |
+| Framework | Next.js App Router | 16.x (Turbopack) |
 | Language | TypeScript, `strict: true` | 5.x |
 | Styling | Tailwind CSS v4 (CSS-first `@theme`) | 4.x |
 | Components | shadcn/ui, heavily restyled | latest |

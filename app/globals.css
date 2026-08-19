@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Nyaama design tokens. Single source of truth for colour and type.
+   Never hardcode a hex outside this block. See docs/03-DESIGN-SYSTEM.md
+   --------------------------------------------------------------- */
+@theme {
+  /* ground */
+  --color-navy: #1c2142;
+  --color-surface: #252b4c;
+  --color-surface-2: #2e3559;
+
+  /* the one accent — scarce by design, means "your next action" */
+  --color-yellow: #f6c447;
+  --color-yellow-dim: #d9a92f;
+
+  /* text */
+  --color-text: #f4f0e6;
+  --color-muted: #a7a9b8;
+
+  /* lines */
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.14);
+
+  /* status */
+  --color-success: #6fcf97;
+  --color-warning: #f2994a;
+  --color-danger: #eb5757;
+
+  /* type */
+  --font-display: var(--font-dm-serif), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  /* radii */
+  --radius-card: 20px;
+  --radius-pill: 999px;
+
+  /* motion */
+  --ease-nyaama: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-navy);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Focus is always visible. Never remove without replacing. */
+:focus-visible {
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background-color: var(--color-yellow);
+  color: var(--color-navy);
+}
+
+/* Scroll reveal — one per section, opt-in via .reveal */
+@keyframes nyaama-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal {
+  animation: nyaama-rise 0.45s var(--ease-nyaama) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
