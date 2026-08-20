@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  useTransition,
+} from "react";
 import { ArrowRight, Check, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { LogoMark } from "@/components/brand/Logo";
@@ -21,6 +27,30 @@ const STORAGE_KEY = "nyaama.interview";
  */
 const COMPOSING_MIN_MS = 700;
 const COMPOSING_MAX_MS = 2600;
+
+const noop = () => () => {};
+
+/**
+ * Whether React has taken over the server-rendered markup.
+ *
+ * The answers are real buttons in the HTML before any JavaScript runs, so
+ * they invite a tap they cannot yet handle — the click lands on nothing and
+ * the conversation appears frozen. That window is a blink on a laptop and
+ * considerably longer on a cheap phone over a slow connection, which is who
+ * this is for. Showing them as not-yet-ready is honest; silently eating the
+ * tap is not.
+ *
+ * useSyncExternalStore rather than an effect: it is the one hook whose
+ * server and client snapshots are allowed to differ, so this cannot cause a
+ * hydration mismatch.
+ */
+function useHydrated() {
+  return useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
+}
 
 function prefersReducedMotion() {
   return (
@@ -48,6 +78,7 @@ export function Interview() {
     0: SLOTS[0].coachLine,
   });
   const [pending, startTransition] = useTransition();
+  const hydrated = useHydrated();
 
   const askedRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
@@ -284,10 +315,12 @@ export function Interview() {
                   type="button"
                   role={slot.type === "single" ? "radio" : "checkbox"}
                   aria-checked={selected}
+                  disabled={!hydrated}
                   onClick={() => choose(option.id)}
                   className={cn(
                     "inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 py-2 text-sm",
                     "transition-[colors,transform] active:scale-[0.97] motion-reduce:active:scale-100",
+                    "disabled:cursor-progress disabled:opacity-50",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
                     // Weight stays constant across states: bolding the
                     // selected chip changes its width, which reflows the row
@@ -316,7 +349,7 @@ export function Interview() {
                 value={answer.text ?? ""}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && answered) advance(index);
+                  if (e.key === "Enter" && answered && hydrated) advance(index);
                 }}
                 placeholder={slot.freeText}
                 maxLength={200}

@@ -10,12 +10,33 @@ import type {
 
 export type StageStatus = "completed" | "in_progress" | "available" | "locked";
 
+/** One lesson as the roadmap needs to show it. */
+export type StageLesson = {
+  id: string;
+  title: string;
+  minutes: number;
+  completed: boolean;
+  /** A cross-cutting Core Skills lesson rather than one about the path itself. */
+  core: boolean;
+};
+
 export type StageView = RoadmapStage & {
   status: StageStatus;
   completedCount: number;
   totalCount: number;
   nextModuleId: string | null;
+  lessons: StageLesson[];
 };
+
+/**
+ * Core lessons are identified by their id, which is how the seed builds them:
+ * one authored lesson cross-joined onto every path as `<prefix>-core-<slug>`.
+ * See docs/08-CURRICULUM.md. Kept in one place so that if the schema ever
+ * grows a column for this, only this function changes.
+ */
+export function isCoreLesson(moduleId: string): boolean {
+  return /^[a-z]{2}-core-/.test(moduleId);
+}
 
 export async function getPathModules(
   pathId: string,
@@ -74,6 +95,14 @@ export function buildStages(
         status === "locked"
           ? null
           : (stageModules.find((m) => !completed.has(m.id))?.id ?? null),
+
+      lessons: stageModules.map((m) => ({
+        id: m.id,
+        title: m.title,
+        minutes: m.minutes,
+        completed: completed.has(m.id),
+        core: isCoreLesson(m.id),
+      })),
     };
   });
 }

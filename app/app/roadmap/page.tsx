@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, Check, Clock, Lock } from "lucide-react";
 import { ButtonLink } from "@/components/ui/Button";
@@ -7,6 +8,7 @@ import {
   buildStages,
   getPathModules,
   type StageStatus,
+  type StageLesson,
   type StageView,
 } from "@/lib/queries/progress";
 import type { ModuleProgress } from "@/lib/types/database";
@@ -148,6 +150,21 @@ function StageCard({ stage, isLast }: { stage: StageView; isLast: boolean }) {
           )}
         </div>
 
+        {/* The lessons themselves. A count alone tells a learner how much is
+            left but never what it is, so half the curriculum — every
+            cross-cutting Core Skill — was invisible until they had clicked
+            through to it. Locked stages still list their titles: seeing what
+            is coming is the reason to finish the stage you are on. */}
+        {stage.lessons.length > 0 && (
+          <ul className="mt-5 border-t border-line pt-2">
+            {stage.lessons.map((lesson) => (
+              <li key={lesson.id}>
+                <LessonRow lesson={lesson} locked={locked} />
+              </li>
+            ))}
+          </ul>
+        )}
+
         {open && stage.nextModuleId && (
           <ButtonLink
             href={`/app/learn/${stage.nextModuleId}`}
@@ -168,6 +185,76 @@ function StageCard({ stage, isLast }: { stage: StageView; isLast: boolean }) {
         )}
       </div>
     </li>
+  );
+}
+
+/**
+ * One lesson in a stage. A link when the learner can open it, plain text when
+ * the stage is still locked — an unlocked-looking link into a locked lesson
+ * would only send them to a wall.
+ */
+function LessonRow({
+  lesson,
+  locked,
+}: {
+  lesson: StageLesson;
+  locked: boolean;
+}) {
+  const body = (
+    <>
+      <span
+        aria-hidden
+        className={cn(
+          "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
+          lesson.completed
+            ? "border-transparent bg-yellow text-navy"
+            : "border-line-strong",
+        )}
+      >
+        {lesson.completed && <Check size={12} strokeWidth={3} />}
+      </span>
+
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate",
+          locked ? "text-muted" : "text-text",
+        )}
+      >
+        {lesson.title}
+      </span>
+
+      {lesson.core && (
+        <span className="hidden shrink-0 rounded-pill border border-yellow/30 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.1em] text-yellow sm:inline">
+          Core skill
+        </span>
+      )}
+
+      <span className="shrink-0 text-xs text-muted">{lesson.minutes} min</span>
+    </>
+  );
+
+  const className =
+    "flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-sm";
+
+  if (locked) {
+    return (
+      <span className={className}>
+        {body}
+        <span className="sr-only">— locked until you finish the stages before it</span>
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={`/app/learn/${lesson.id}`}
+      className={cn(
+        className,
+        "transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow",
+      )}
+    >
+      {body}
+    </Link>
   );
 }
 
