@@ -166,6 +166,30 @@ function sharedSkills(paths: CareerPath[]): string[] {
   );
 }
 
+/**
+ * One line each, lifted from what the lesson actually argues — so the
+ * promise on the landing page and the lesson behind the login agree.
+ *
+ * Optional by design: a skill with no line here still renders as a card,
+ * because the list comes from the database and must not be able to break
+ * this section by growing.
+ */
+const SKILL_NOTES: Record<string, string> = {
+  "Analytical thinking": "Cut a problem into pieces small enough to check.",
+  "Learning how to learn":
+    "The one skill that stops every other skill expiring.",
+  Communication: "Skill nobody can see doesn’t get hired.",
+  "Creative thinking":
+    "AI makes a thousand ideas. You decide which one matters.",
+  "Systems thinking": "See what the broken part is connected to.",
+  "Emotional intelligence": "The part of the work a machine cannot do.",
+  Entrepreneurship: "Know where the money comes from, wherever you work.",
+  "Personal branding": "Be the person who comes to mind.",
+  Leadership: "Take responsibility before anyone hands you the title.",
+  "Financial literacy": "Getting paid, and keeping it.",
+  "Domain expertise": "Know one field deeply. That is what stays scarce.",
+};
+
 export function CoreSkills({ paths }: { paths: CareerPath[] }) {
   const skills = sharedSkills(paths);
   if (skills.length === 0) return null;
@@ -174,33 +198,43 @@ export function CoreSkills({ paths }: { paths: CareerPath[] }) {
     <section className="border-t border-line py-20 sm:py-28">
       <div className="mx-auto max-w-[1120px] px-6">
         <Eyebrow>More than technical skills</Eyebrow>
-        <h2 className="mt-4 max-w-2xl font-display text-[clamp(2rem,4vw,3rem)] leading-tight text-text">
+        <h2 className="mt-4 max-w-3xl font-display text-[clamp(2.5rem,5.5vw,4rem)] leading-[1.06] text-text">
           The skills that don&rsquo;t expire.
         </h2>
-        <p className="mt-5 max-w-2xl leading-relaxed text-muted">
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text/80">
           Tools change. Frameworks get replaced. Whole job titles appear and
           disappear. What holds its value is the human part — the thinking, the
-          explaining, the judgement — and it is what employers say they are
-          short of.
-        </p>
-        <p className="mt-4 max-w-2xl leading-relaxed text-muted">
-          So every path here teaches these too, inside the direction you chose.
-          Not a separate course you would never open.
+          explaining, the judgement — and it is exactly what employers say they
+          cannot find.
         </p>
 
-        <ul className="mt-12 flex flex-wrap gap-2.5">
-          {skills.map((skill) => (
+        <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {skills.map((skill, i) => (
             <li
               key={skill}
-              className="rounded-pill border border-line bg-surface px-4 py-2 text-sm text-text"
+              className="rounded-[20px] border border-line bg-surface p-5 transition-colors hover:border-line-strong hover:bg-surface-2"
             >
-              {skill}
+              <span className="font-display text-sm text-yellow">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="mt-2 font-display text-xl leading-snug text-text">
+                {skill}
+              </h3>
+              {SKILL_NOTES[skill] && (
+                <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                  {SKILL_NOTES[skill]}
+                </p>
+              )}
             </li>
           ))}
         </ul>
 
-        <p className="mt-10 text-muted">
-          Learn to code, and learn to be listened to.
+        <p className="mt-14 max-w-3xl font-display text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight text-text">
+          Every path teaches all of these.{" "}
+          <span className="text-muted">
+            Inside the direction you chose — not a separate course you would
+            never open.
+          </span>
         </p>
       </div>
     </section>
