@@ -1,3 +1,5 @@
+import Image from "next/image";
+import mark from "@/public/nyaama.svg";
 import { cn } from "@/lib/utils/cn";
 
 type LogoProps = {
@@ -9,9 +11,12 @@ type LogoProps = {
 };
 
 /**
- * The Nyaama mark: a yellow rounded square holding a navy compass reading —
- * a ring with an offset dot. Not a literal compass, and deliberately simple
- * so it survives being rendered at 16px as a favicon.
+ * The Nyaama mark, from public/nyaama.svg — the same artwork the browser
+ * tab and the home-screen icon use, so the brand is one thing everywhere.
+ *
+ * The artwork carries its own light ground, so it is clipped to the rounded
+ * square the rest of the interface uses rather than being floated on the
+ * navy.
  */
 export function LogoMark({
   size = 32,
@@ -23,28 +28,20 @@ export function LogoMark({
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center justify-center rounded-[28%] bg-yellow",
+        "inline-flex shrink-0 overflow-hidden rounded-[28%]",
         className,
       )}
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
-      <svg
-        width={size * 0.6}
-        height={size * 0.6}
-        viewBox="0 0 24 24"
-        fill="none"
-        className="text-navy"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="8.25"
-          stroke="currentColor"
-          strokeWidth="2"
-        />
-        <circle cx="15" cy="9" r="2.5" fill="currentColor" />
-      </svg>
+      <Image
+        src={mark}
+        alt=""
+        width={size}
+        height={size}
+        priority
+        className="h-full w-full object-cover"
+      />
     </span>
   );
 }
