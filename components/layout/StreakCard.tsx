@@ -1,22 +1,21 @@
+import type { StreakDay } from "@/lib/queries/user";
 import { cn } from "@/lib/utils/cn";
-
-const LETTERS = ["M", "T", "W", "T", "F", "S", "S"];
 
 /**
  * Motivational, not childish: no flames, no confetti. The encouragement
  * line changes with the streak so it never reads as canned.
+ *
+ * The dots are the last seven days ending today, each carrying its own
+ * weekday letter from the query. They are not a Monday-to-Sunday week —
+ * labelling them as one put Thursday's activity under "S".
  */
 export function StreakCard({
   days,
   streak,
 }: {
-  days: boolean[];
+  days: StreakDay[];
   streak: number;
 }) {
-  const today = new Date().getDay();
-  // Our week runs Monday-first; getDay() is Sunday-first.
-  const todayIndex = (today + 6) % 7;
-
   const message =
     streak === 0
       ? "Every path starts with one day. Today can be it."
@@ -37,19 +36,20 @@ export function StreakCard({
       </p>
       <p className="mt-2 text-xs leading-relaxed text-muted">{message}</p>
 
-      <ul className="mt-4 flex justify-between" aria-label="This week's activity">
-        {days.map((done, i) => (
+      <ul className="mt-4 flex justify-between" aria-label="Activity, last seven days">
+        {days.map((day, i) => (
           <li key={i} className="flex flex-col items-center gap-1.5">
             <span
-              title={`${LETTERS[i]} — ${done ? "active" : "no activity"}`}
+              title={`${day.isToday ? "Today" : day.letter} — ${day.done ? "active" : "no activity"}`}
               className={cn(
                 "block h-2 w-2 rounded-full",
-                done ? "bg-yellow" : "bg-white/10",
-                i === todayIndex && "ring-2 ring-yellow/40 ring-offset-2 ring-offset-surface",
+                day.done ? "bg-yellow" : "bg-white/10",
+                day.isToday &&
+                  "ring-2 ring-yellow/40 ring-offset-2 ring-offset-surface",
               )}
             />
             <span className="text-[0.625rem] text-muted" aria-hidden>
-              {LETTERS[i]}
+              {day.letter}
             </span>
           </li>
         ))}

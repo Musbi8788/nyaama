@@ -77,6 +77,21 @@ export async function getModuleProgress(): Promise<ModuleProgress[]> {
   return (data ?? []) as ModuleProgress[];
 }
 
+/** One dot on the streak card. */
+export type StreakDay = { letter: string; done: boolean; isToday: boolean };
+
+const LETTERS = ["S", "M", "T", "W", "T", "F", "S"];
+
+/** Seven empty dots ending today, for signed-out or error states. */
+function blankWeek(): StreakDay[] {
+  const today = new Date();
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return { letter: LETTERS[d.getDay()], done: false, isToday: i === 6 };
+  });
+}
+
 /**
  * The seven days ending today, and the current streak.
  *
@@ -84,13 +99,17 @@ export async function getModuleProgress(): Promise<ModuleProgress[]> {
  * arithmetic is far easier to reason about (and test) in one place.
  * A streak survives until the end of the following day, so someone who
  * studies late on Monday has all of Tuesday to keep it.
+ *
+ * Each day carries its own weekday letter. The window rolls — today is
+ * always the last dot — so the card cannot label a fixed Monday-to-Sunday
+ * week over data that does not run Monday to Sunday.
  */
-export async function getStreak(): Promise<{ days: boolean[]; streak: number }> {
+export async function getStreak(): Promise<{ days: StreakDay[]; streak: number }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { days: Array(7).fill(false), streak: 0 };
+  if (!user) return { days: blankWeek(), streak: 0 };
 
   const { data } = await supabase
     .from("activity_log")
@@ -103,11 +122,15 @@ export async function getStreak(): Promise<{ days: boolean[]; streak: number }> 
   const iso = (d: Date) => d.toISOString().slice(0, 10);
   const today = new Date();
 
-  const days: boolean[] = [];
+  const days: StreakDay[] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
-    days.push(active.has(iso(d)));
+    days.push({
+      letter: LETTERS[d.getDay()],
+      done: active.has(iso(d)),
+      isToday: i === 0,
+    });
   }
 
   let streak = 0;
