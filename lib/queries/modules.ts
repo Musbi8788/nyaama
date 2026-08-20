@@ -1,12 +1,18 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { buildStages, getPathModules } from "@/lib/queries/progress";
+import { getPathProject } from "@/lib/queries/projects";
 import type {
   CareerPath,
   LearningModule,
   ModuleProgress,
   Profile,
 } from "@/lib/types/database";
+
+/** Where "Mark as complete" sends them next. */
+export type NextStep =
+  | { kind: "module"; id: string; title: string }
+  | { kind: "project"; id: string; title: string };
 
 export type ModuleAccess =
   | { ok: false; reason: "not_found" | "wrong_path" | "locked" }
@@ -15,8 +21,7 @@ export type ModuleAccess =
       module: LearningModule;
       path: CareerPath;
       completed: boolean;
-      /** Where "Mark as complete" sends them next. */
-      next: { kind: "module"; id: string; title: string } | { kind: "project" } | null;
+      next: NextStep | null;
     };
 
 /**
@@ -73,13 +78,14 @@ export async function getModuleAccess(
   const here = modules.findIndex((m) => m.id === lesson.id);
   const following = here >= 0 ? modules[here + 1] : undefined;
 
-  return {
-    ok: true,
-    module: lesson,
-    path,
-    completed,
-    next: following
-      ? { kind: "module", id: following.id, title: following.title }
-      : { kind: "project" },
-  };
+  let next: NextStep | null;
+  if (following) {
+    next = { kind: "module", id: following.id, title: following.title };
+  } else {
+    // Last lesson on the path: the project is what everything was for.
+    const project = await getPathProject(lesson.path_id);
+    next = project ? { kind: "project", id: project.id, title: project.title } : null;
+  }
+
+  return { ok: true, module: lesson, path, completed, next };
 }

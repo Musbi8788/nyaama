@@ -65,9 +65,7 @@ export default async function LearnPage({
         body={lesson.body}
         practice={lesson.practice}
         completed={completed}
-        nextLabel={
-          next?.kind === "module" ? next.title : "Your project"
-        }
+        nextLabel={next?.title ?? "Your roadmap"}
       />
     </div>
   );

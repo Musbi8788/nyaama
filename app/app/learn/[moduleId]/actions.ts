@@ -42,5 +42,6 @@ export async function markComplete(moduleId: string) {
   // Straight into the next lesson keeps the momentum. When the modules run
   // out, the project is the point of the whole path.
   if (access.next?.kind === "module") redirect(`/app/learn/${access.next.id}`);
+  if (access.next?.kind === "project") redirect(`/app/project/${access.next.id}`);
   redirect("/app/roadmap");
 }
