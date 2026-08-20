@@ -1,6 +1,6 @@
 import "server-only";
-import { MODELS, text } from "@/lib/ai/client";
 import { createClient } from "@/lib/supabase/server";
+import { translateBody } from "@/lib/ai/translate";
 import type { LanguageOption } from "@/lib/data/languages";
 import type { LearningModule } from "@/lib/types/database";
 
@@ -20,7 +20,8 @@ export type Explanation = {
  *
  * Translation genuinely needs the model, so it is the only path that can
  * fail — and when it does, the caller keeps the learner on English rather
- * than showing them nothing.
+ * than showing them nothing. Running scripts/prewarm.mts before a demo
+ * turns that path into a cache read too.
  */
 export async function explain(
   module: LearningModule,
@@ -42,27 +43,8 @@ export async function explain(
 
   if (cached?.content) return { content: cached.content, source: "cache" };
 
-  const written = await text({
-    model: MODELS.strong,
-    timeoutMs: 20_000,
-    maxTokens: 900,
-    temperature: 0.3,
-    system: [
-      `You translate beginner technology lessons into ${option.language}, for young people in The Gambia.`,
-      "Rules:",
-      `- Write the whole explanation in ${option.language}. Do not include an English version.`,
-      "- Keep technical terms (API, HTML, JavaScript, browser, server) in English. Learners must recognise them in the tools they will use. Explain each one in the local language the first time it appears.",
-      "- Keep the everyday comparisons from the original. They are what make the lesson land.",
-      "- Keep the markdown structure: paragraphs, **bold**, `code`, and ``` fences unchanged.",
-      "- Do not add a title or any heading. Start with the first paragraph.",
-      "- Never add commentary about the translation itself.",
-    ].join("\n"),
-    user: `Lesson title: ${module.title}\n\n${module.simple_body}`,
-  });
-
-  if (!written) return null;
-
-  const content = stripLeadingHeading(written);
+  const content = await translateBody(module, option);
+  if (!content) return null;
 
   // Cache on the way out. A duplicate row is possible if two learners ask at
   // the same instant, so let the unique constraint settle it and ignore the
@@ -75,17 +57,4 @@ export async function explain(
     );
 
   return { content, source: "ai" };
-}
-
-/**
- * Drops a heading the model added at the top.
- *
- * Asked for a translation, gpt-4o sometimes opens with the lesson title —
- * occasionally still in English. The page already renders the title above
- * the body, so that reads as a duplicate. The authored bodies contain no
- * headings at all, which is what makes this safe: a leading heading is
- * always the model's invention, never the author's.
- */
-function stripLeadingHeading(body: string): string {
-  return body.replace(/^\s*#{1,6}[^\n]*\n+/, "").trim();
 }

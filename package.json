@@ -10,7 +10,12 @@
     "db:migrate": "node scripts/db.mjs migrate",
     "db:seed": "node scripts/db.mjs seed",
     "db:all": "node scripts/db.mjs all",
-    "db:verify": "node scripts/db.mjs verify"
+    "db:verify": "node scripts/db.mjs verify",
+    "prewarm": "tsx --tsconfig scripts/tsconfig.test.json scripts/prewarm.mts",
+    "demo:account": "tsx --tsconfig scripts/tsconfig.test.json scripts/demo-account.mts",
+    "test:review": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-review.mts",
+    "test:roadmap": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-roadmap.mts",
+    "test:translations": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-degenerate.mts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
