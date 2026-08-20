@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Serif_Display, Inter } from "next/font/google";
+import { getSiteUrl } from "@/lib/utils/site-url";
 import "./globals.css";
 
 const inter = Inter({
@@ -22,9 +23,7 @@ export const metadata: Metadata = {
   },
   description:
     "Too many paths, no clear direction. Nyaama is an AI career coach for young Gambians — one direction, a roadmap, and something real to build.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: new URL(getSiteUrl()),
   openGraph: {
     title: "Nyaama — Find Your Way",
     description:
