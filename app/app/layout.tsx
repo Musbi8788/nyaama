@@ -38,6 +38,23 @@ export default async function AppLayout({
 
       {/* pb-24 clears the fixed mobile nav bar */}
       <div className="flex-1 pb-24 lg:pb-0 lg:pl-[264px]">
+        {/* Log out lives in the sidebar, which is hidden below lg — without
+            this bar there is no way to sign out on a phone at all. */}
+        <div className="flex items-center justify-between border-b border-line px-5 py-3 lg:hidden">
+          <Link href="/app" className="inline-flex rounded-lg">
+            <Logo size={26} />
+          </Link>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex h-11 items-center gap-2 rounded-pill px-3 text-sm text-muted transition-colors hover:bg-white/[0.04] hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+            >
+              <LogOut size={16} strokeWidth={1.75} aria-hidden />
+              Log out
+            </button>
+          </form>
+        </div>
+
         <main className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
           {children}
         </main>
