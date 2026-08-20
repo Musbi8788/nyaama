@@ -11,6 +11,8 @@ Hack4Gambia 2026. Read in order.
 | [`04-SCREENS.md`](04-SCREENS.md) | Screen-by-screen spec, copy included — landing page leads with the problem |
 | [`05-BUILD-PLAN.md`](05-BUILD-PLAN.md) | 2-day schedule, parallel tracks and file ownership, risk register, demo script |
 | [`06-SETUP.md`](06-SETUP.md) | **What the team must provide** — Supabase, OpenAI, GitHub, Vercel |
+| [`07-DEPLOY.md`](07-DEPLOY.md) | Env vars, the deploy runbook, and the known gaps |
+| [`08-CURRICULUM.md`](08-CURRICULUM.md) | Where the skills come from, and why Core Skills is a layer rather than a sixth path |
 
 `../NYAAMA_Project.md` is the original vision document. Where it and `00-PRD.md` disagree,
 `00-PRD.md` wins — it records decisions made after the vision doc was written.

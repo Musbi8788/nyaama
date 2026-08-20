@@ -10,14 +10,21 @@ import type { ReactNode } from "react";
  * untidy.
  *
  * Supported, because it is what the lessons actually use: blank-line
- * paragraphs, ``` fences, `inline code`, **bold**, and - / 1. lists.
- * Anything else renders as plain text rather than disappearing.
+ * paragraphs, ``` fences, `inline code`, **bold**, *italic*, # headings,
+ * and - / 1. lists. Anything else renders as plain text rather than
+ * disappearing.
  */
 
-/** Splits on **bold** and `code`, leaving the rest as text. */
+/**
+ * Splits on **bold**, *italic* and `code`, leaving the rest as text.
+ *
+ * Bold comes first in the alternation so that **x** is never mistaken for
+ * an italic run, and an italic opener must be followed by a non-space so
+ * that arithmetic and stray asterisks stay literal.
+ */
 function inline(text: string, keyPrefix: string): ReactNode[] {
   const nodes: ReactNode[] = [];
-  const pattern = /(\*\*[^*]+\*\*|`[^`]+`)/g;
+  const pattern = /(\*\*[^*]+\*\*|\*[^*\s][^*]*\*|`[^`]+`)/g;
   let last = 0;
   let match: RegExpExecArray | null;
   let n = 0;
@@ -31,6 +38,12 @@ function inline(text: string, keyPrefix: string): ReactNode[] {
         <strong key={`${keyPrefix}-b${n}`} className="font-semibold text-text">
           {token.slice(2, -2)}
         </strong>,
+      );
+    } else if (token.startsWith("*")) {
+      nodes.push(
+        <em key={`${keyPrefix}-i${n}`} className="italic text-text/90">
+          {token.slice(1, -1)}
+        </em>,
       );
     } else {
       nodes.push(

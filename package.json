@@ -15,7 +15,8 @@
     "demo:account": "tsx --tsconfig scripts/tsconfig.test.json scripts/demo-account.mts",
     "test:review": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-review.mts",
     "test:roadmap": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-roadmap.mts",
-    "test:translations": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-degenerate.mts"
+    "test:translations": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-degenerate.mts",
+    "test:markdown": "tsx --tsconfig scripts/tsconfig.test.json scripts/test-markdown.mts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
