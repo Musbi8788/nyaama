@@ -27,14 +27,15 @@ export function Interview() {
   // This has to be an effect: sessionStorage does not exist during SSR, so a
   // lazy useState initialiser would return different values on server and
   // client and desynchronise hydration. Restoring after mount is correct here.
-  /* eslint-disable-next-line react-hooks/set-state-in-effect */
   useEffect(() => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (!saved) return;
     try {
       const { index: i, answers: a } = JSON.parse(saved);
+      /* eslint-disable react-hooks/set-state-in-effect */
       if (typeof i === "number" && i < SLOTS.length) setIndex(i);
       if (a && typeof a === "object") setAnswers(a);
+      /* eslint-enable react-hooks/set-state-in-effect */
     } catch {
       sessionStorage.removeItem(STORAGE_KEY);
     }
