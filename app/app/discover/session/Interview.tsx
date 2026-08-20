@@ -49,7 +49,7 @@ export function Interview() {
   });
   const [pending, startTransition] = useTransition();
 
-  const endRef = useRef<HTMLDivElement>(null);
+  const askedRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<HTMLDivElement>(null);
   const restored = useRef(false);
 
@@ -142,11 +142,14 @@ export function Interview() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
-  // Keep the newest turn in view, the way a messaging app does.
+  // Bring the newest question to the top of the screen rather than the
+  // bottom. Scrolling to the very end would park it under the sticky
+  // composer; putting it at the top leaves the question and the answers to
+  // it visible at the same time, which is the pair that has to be readable.
   useEffect(() => {
-    endRef.current?.scrollIntoView({
+    askedRef.current?.scrollIntoView({
       behavior: prefersReducedMotion() ? "auto" : "smooth",
-      block: "end",
+      block: "start",
     });
   }, [index, composing]);
 
@@ -184,9 +187,18 @@ export function Interview() {
 
     // Single choice sends the turn straight away. Asking someone to pick an
     // answer and then press Continue is the survey feeling we are removing.
-    const next = { ...answers, [slot.id]: { ...answers[slot.id], options: [optionId] } };
-    setAnswers(next);
-    if (!slot.freeText) advance(index);
+    //
+    // A free-text box does not change that: on these slots it is an
+    // *alternative* to the options ("Something else — tell us briefly"), not
+    // an addition, so picking an option means they are done. The one case to
+    // respect is text already typed — then they chose to answer that way and
+    // we must not send it out from under them.
+    const typed = Boolean(answers[slot.id]?.text?.trim());
+    setAnswers((prev) => ({
+      ...prev,
+      [slot.id]: { ...prev[slot.id], options: [optionId] },
+    }));
+    if (!typed) advance(index);
   }
 
   function setText(text: string) {
@@ -215,14 +227,23 @@ export function Interview() {
 
       {/* The transcript. Polite, so each new coach turn is announced once
           rather than the whole conversation being re-read. */}
-      <div className="flex-1 space-y-6 py-8" aria-live="polite" aria-atomic="false">
+      <div
+        className="flex-1 space-y-6 pb-10 pt-8"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         {SLOTS.slice(0, index + 1).map((s, i) => {
           const line = lines[i];
           const said = replyText(s, answers[s.id]);
           const isCurrent = i === index;
 
           return (
-            <div key={s.id} className="space-y-6">
+            <div
+              key={s.id}
+              // scroll-mt clears the sticky progress bar above.
+              ref={isCurrent ? askedRef : undefined}
+              className="space-y-6 scroll-mt-20"
+            >
               {line ? (
                 <Coach>
                   <p className="text-yellow">{line}</p>
@@ -243,7 +264,6 @@ export function Interview() {
         })}
 
         {composing && <Composing />}
-        <div ref={endRef} />
       </div>
 
       {/* The composer: what you can say next. */}
@@ -269,8 +289,11 @@ export function Interview() {
                     "inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 py-2 text-sm",
                     "transition-[colors,transform] active:scale-[0.97] motion-reduce:active:scale-100",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
+                    // Weight stays constant across states: bolding the
+                    // selected chip changes its width, which reflows the row
+                    // and makes the answers jump under the cursor.
                     selected
-                      ? "border-transparent bg-yellow font-medium text-navy"
+                      ? "border-transparent bg-yellow text-navy"
                       : "border-line text-muted hover:border-line-strong hover:text-text",
                   )}
                 >

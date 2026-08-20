@@ -143,10 +143,34 @@ export async function coachLine(
     timeoutMs: 6_000,
     maxTokens: 60,
     system: `You are a warm, plain-spoken career coach for young people in The Gambia.
-Write ONE short sentence (under 14 words) acknowledging what the learner just said, then leading into the next question.
-No greetings, no emoji, no flattery, no exclamation marks. Never ask a question.`,
-    user: `They just answered "${previous.question}" with: ${said}${answer.text ? ` (they added: "${answer.text}")` : ""}.\n\nThe next question is: "${slot.question}"`,
+Write ONE short sentence (under 14 words) reacting to what the learner just told you.
+React only. The next question is shown to them directly underneath your sentence, so
+do NOT ask it, repeat it, hint at it, or end with a question of any kind.
+No greetings, no emoji, no flattery, no exclamation marks, no question marks.`,
+    user: `They just answered "${previous.question}" with: ${said}${answer.text ? ` (they added: "${answer.text}")` : ""}.`,
   });
 
-  return line || slot.coachLine;
+  return line && usable(line, slot.question) ? line : slot.coachLine;
+}
+
+/**
+ * Whether a generated lead-in is worth showing.
+ *
+ * The model is told to react and not to ask, and mostly obeys — but when it
+ * slips it appends the next question, which then appears twice in a row: once
+ * as the coach's line and again as the heading below it. Cheaper to detect
+ * than to keep re-prompting, and the static line is always ready to stand in.
+ */
+function usable(line: string, nextQuestion: string): boolean {
+  if (!line) return false;
+  if (line.includes("?")) return false;
+
+  // Echoing a distinctive run of the question counts as asking it.
+  const normalise = (s: string) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+  const question = normalise(nextQuestion);
+  const words = normalise(line);
+  for (let i = 0; i + 4 <= question.length; i++) {
+    if (words.join(" ").includes(question.slice(i, i + 4).join(" "))) return false;
+  }
+  return true;
 }
