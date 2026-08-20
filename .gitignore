@@ -58,3 +58,6 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Local agent state
+.claude/scheduled_tasks.lock
