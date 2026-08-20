@@ -146,6 +146,67 @@ export function PathGrid({ paths }: { paths: CareerPath[] }) {
   );
 }
 
+/**
+ * The skills every path teaches, whichever one you pick.
+ *
+ * Derived, not listed. A skill carried by all five paths is by definition
+ * part of the cross-cutting Core Skills layer, so this section cannot drift
+ * from what the curriculum actually contains — adding a core lesson to the
+ * seed shows up here on the next request.
+ *
+ * It reads career_paths rather than learning_modules because lessons are not
+ * readable by signed-out visitors, and should not be. Names are the promise;
+ * the lessons themselves are behind the door.
+ */
+function sharedSkills(paths: CareerPath[]): string[] {
+  if (paths.length < 2) return [];
+  const [first, ...rest] = paths;
+  return first.skills.filter((skill) =>
+    rest.every((path) => path.skills.includes(skill)),
+  );
+}
+
+export function CoreSkills({ paths }: { paths: CareerPath[] }) {
+  const skills = sharedSkills(paths);
+  if (skills.length === 0) return null;
+
+  return (
+    <section className="border-t border-line py-20 sm:py-28">
+      <div className="mx-auto max-w-[1120px] px-6">
+        <Eyebrow>More than technical skills</Eyebrow>
+        <h2 className="mt-4 max-w-2xl font-display text-[clamp(2rem,4vw,3rem)] leading-tight text-text">
+          The skills that don&rsquo;t expire.
+        </h2>
+        <p className="mt-5 max-w-2xl leading-relaxed text-muted">
+          Tools change. Frameworks get replaced. Whole job titles appear and
+          disappear. What holds its value is the human part — the thinking, the
+          explaining, the judgement — and it is what employers say they are
+          short of.
+        </p>
+        <p className="mt-4 max-w-2xl leading-relaxed text-muted">
+          So every path here teaches these too, inside the direction you chose.
+          Not a separate course you would never open.
+        </p>
+
+        <ul className="mt-12 flex flex-wrap gap-2.5">
+          {skills.map((skill) => (
+            <li
+              key={skill}
+              className="rounded-pill border border-line bg-surface px-4 py-2 text-sm text-text"
+            >
+              {skill}
+            </li>
+          ))}
+        </ul>
+
+        <p className="mt-10 text-muted">
+          Learn to code, and learn to be listened to.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export function ProjectShowcase({ projects }: { projects: Project[] }) {
   return (
     <section className="border-t border-line bg-surface/30 py-20 sm:py-28">

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Header } from "@/components/marketing/Header";
 import { Hero } from "@/components/marketing/Hero";
 import {
+  CoreSkills,
   FinalCta,
   Footer,
   HowItWorks,
@@ -32,6 +33,8 @@ export default async function LandingPage() {
         <ProblemSection />
         <HowItWorks />
         {paths.length > 0 && <PathGrid paths={paths} />}
+        {/* Self-guarding: renders nothing until the paths agree on a skill. */}
+        <CoreSkills paths={paths} />
         {projects.length > 0 && <ProjectShowcase projects={projects} />}
         <LanguageSection />
         <FinalCta />
