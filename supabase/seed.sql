@@ -38,7 +38,7 @@ insert into public.career_paths (id, name, tagline, description, icon, sort, ski
        'Emotional intelligence','Entrepreneurship','Personal branding','Leadership','Financial literacy','Domain expertise'],
  $json$[
   {"n":1,"title":"Foundations","summary":"What AI actually is, what it is not, and where it genuinely helps — plus how to think clearly about a problem before reaching for a model.","skills":["AI literacy","Problem framing","Analytical thinking","Learning how to learn"],"effort":"6–8 hours","moduleIds":["ai-what-is-ai","ai-core-analytical","ai-core-learning"]},
-  {"n":2,"title":"Programming with Python","summary":"Python is the language most AI is built in. Start here — and learn to explain what your code does to someone who does not code.","skills":["Python","Logic","Data types","Communication","Creative thinking"],"effort":"14–17 hours","moduleIds":["ai-core-communication","ai-core-creative"]},
+  {"n":2,"title":"Programming with Python","summary":"Python is the language most AI is built in. Start here — and learn to explain what your code does to someone who does not code.","skills":["Python","Logic","Data types","Communication","Creative thinking"],"effort":"14–17 hours","moduleIds":["ai-python-basics","ai-core-communication","ai-core-creative"]},
   {"n":3,"title":"Working with Data","summary":"Loading, cleaning and understanding data before any model touches it — and seeing the system that produced it.","skills":["Data cleaning","Analysis","Systems thinking","Emotional intelligence"],"effort":"12–15 hours","moduleIds":["ai-core-systems","ai-core-emotional"]},
   {"n":4,"title":"Build with AI","summary":"Use existing models through APIs to build something genuinely useful — and something people can actually find.","skills":["APIs","Prompt engineering","Product thinking","Entrepreneurship","Personal branding"],"effort":"14–18 hours","moduleIds":["ai-core-entrepreneurship","ai-core-branding"]},
   {"n":5,"title":"Real-World Work","summary":"Solve a real problem for a real organisation using AI.","skills":["Evaluation","Ethics","Leadership","Financial literacy","Domain expertise"],"effort":"Ongoing","moduleIds":["ai-core-leadership","ai-core-money","ai-core-domain"]}
@@ -53,7 +53,7 @@ insert into public.career_paths (id, name, tagline, description, icon, sort, ski
        'Emotional intelligence','Entrepreneurship','Personal branding','Leadership','Financial literacy','Domain expertise'],
  $json$[
   {"n":1,"title":"Foundations","summary":"What data analysis is, the questions worth asking of data, and how to turn a vague request into one you can actually answer.","skills":["Data literacy","Asking good questions","Analytical thinking","Learning how to learn"],"effort":"6–8 hours","moduleIds":["da-what-is-analysis","da-core-analytical","da-core-learning"]},
-  {"n":2,"title":"Spreadsheets","summary":"Excel and Google Sheets properly — still the most-used analysis tool on earth — and presenting what they tell you.","skills":["Formulas","Pivot tables","Charts","Communication","Creative thinking"],"effort":"12–14 hours","moduleIds":["da-core-communication","da-core-creative"]},
+  {"n":2,"title":"Spreadsheets","summary":"Excel and Google Sheets properly — still the most-used analysis tool on earth — and presenting what they tell you.","skills":["Formulas","Pivot tables","Charts","Communication","Creative thinking"],"effort":"12–14 hours","moduleIds":["da-spreadsheets","da-core-communication","da-core-creative"]},
   {"n":3,"title":"SQL","summary":"Ask questions of real databases, and understand the system that produced the rows you are querying.","skills":["SELECT","Joins","Aggregation","Systems thinking","Emotional intelligence"],"effort":"14–17 hours","moduleIds":["da-core-systems","da-core-emotional"]},
   {"n":4,"title":"Visualisation","summary":"Show findings so a decision-maker acts on them — and so people know whose work it was.","skills":["Charts","Dashboards","Storytelling","Entrepreneurship","Personal branding"],"effort":"12–15 hours","moduleIds":["da-core-entrepreneurship","da-core-branding"]},
   {"n":5,"title":"Real-World Work","summary":"Analyse a genuine local dataset and present what you found.","skills":["Reporting","Presentation","Leadership","Financial literacy","Domain expertise"],"effort":"Ongoing","moduleIds":["da-core-leadership","da-core-money","da-core-domain"]}
@@ -68,7 +68,7 @@ insert into public.career_paths (id, name, tagline, description, icon, sort, ski
        'Emotional intelligence','Entrepreneurship','Personal branding','Leadership','Financial literacy','Domain expertise'],
  $json$[
   {"n":1,"title":"Foundations","summary":"How attacks actually happen, why most of them are not sophisticated, and how to reason your way through a problem under pressure.","skills":["Security literacy","Threat awareness","Analytical thinking","Learning how to learn"],"effort":"6–8 hours","moduleIds":["cy-security-basics","cy-core-analytical","cy-core-learning"]},
-  {"n":2,"title":"Networking","summary":"How data moves, because you cannot defend what you cannot picture — and how to write up what you find so someone acts on it.","skills":["TCP/IP","DNS","Ports","Communication","Creative thinking"],"effort":"14–16 hours","moduleIds":["cy-core-communication","cy-core-creative"]},
+  {"n":2,"title":"Networking","summary":"How data moves, because you cannot defend what you cannot picture — and how to write up what you find so someone acts on it.","skills":["TCP/IP","DNS","Ports","Communication","Creative thinking"],"effort":"14–16 hours","moduleIds":["cy-how-data-moves","cy-core-communication","cy-core-creative"]},
   {"n":3,"title":"Systems & Linux","summary":"Operating systems, permissions and the command line — and the people who use them, who are the real attack surface.","skills":["Linux","Permissions","Systems thinking","Emotional intelligence"],"effort":"16–19 hours","moduleIds":["cy-core-systems","cy-core-emotional"]},
   {"n":4,"title":"Defence & Testing","summary":"Find weaknesses safely and legally, and fix them. Then make sure the right people know you can.","skills":["Vulnerability basics","Hardening","Entrepreneurship","Personal branding"],"effort":"19–24 hours","moduleIds":["cy-core-entrepreneurship","cy-core-branding"]},
   {"n":5,"title":"Real-World Work","summary":"Assess and improve the security of a real system, with permission.","skills":["Reporting","Ethics","Leadership","Financial literacy","Domain expertise"],"effort":"Ongoing","moduleIds":["cy-core-leadership","cy-core-money","cy-core-domain"]}
@@ -83,7 +83,7 @@ insert into public.career_paths (id, name, tagline, description, icon, sort, ski
        'Emotional intelligence','Entrepreneurship','Personal branding','Leadership','Financial literacy','Domain expertise'],
  $json$[
   {"n":1,"title":"Foundations","summary":"The principles behind every good design — hierarchy, contrast, space — and how to take a brief apart before you open a design tool.","skills":["Design principles","Visual hierarchy","Analytical thinking","Learning how to learn"],"effort":"6–8 hours","moduleIds":["gd-design-foundations","gd-core-analytical","gd-core-learning"]},
-  {"n":2,"title":"Typography & Colour","summary":"The two decisions that make work look professional or amateur — and how to explain them when a client disagrees.","skills":["Typography","Colour theory","Communication","Creative thinking"],"effort":"12–14 hours","moduleIds":["gd-core-communication","gd-core-creative"]},
+  {"n":2,"title":"Typography & Colour","summary":"The two decisions that make work look professional or amateur — and how to explain them when a client disagrees.","skills":["Typography","Colour theory","Communication","Creative thinking"],"effort":"12–14 hours","moduleIds":["gd-typography","gd-core-communication","gd-core-creative"]},
   {"n":3,"title":"Tools","summary":"Figma and the craft of actually producing the work, inside the system it will be used in.","skills":["Figma","Layout","Systems thinking","Emotional intelligence"],"effort":"14–17 hours","moduleIds":["gd-core-systems","gd-core-emotional"]},
   {"n":4,"title":"Brand Identity","summary":"Build a complete identity — logo, colours, type, application — and a body of work people can find.","skills":["Branding","Logo design","Entrepreneurship","Personal branding"],"effort":"16–20 hours","moduleIds":["gd-core-entrepreneurship","gd-core-branding"]},
   {"n":5,"title":"Real-World Work","summary":"Design for a real business and see your work in use.","skills":["Client work","Briefs","Leadership","Financial literacy","Domain expertise"],"effort":"Ongoing","moduleIds":["gd-core-leadership","gd-core-money","gd-core-domain"]}
@@ -571,7 +571,316 @@ Three things do most of the work:
 
 If your design feels messy, the answer is usually less content and more space, not a different font.$md$,
  'Find a poster or flyer near you — a shop sign, a church notice, an advert. Ask: what did they want me to see first? Did it work? Redraw it on paper making the most important thing much larger and removing anything unnecessary.',
- array['Design principles','Visual hierarchy'], 12, 1)
+ array['Design principles','Visual hierarchy'], 12, 1),
+
+('ai-python-basics', 'artificial_intelligence', 2,
+ 'Your first Python',
+ 'Four ideas carry most of the language. Everything else is built on them.',
+ $md$Python is the language most AI work is written in, and it was designed to be readable. That is not marketing — it genuinely reads closer to English than most languages, which is why it became the default for people whose main subject is something other than programming.
+
+You need four ideas before anything else makes sense.
+
+**A variable is a name for a value.**
+
+```python
+name = "Fatou"
+age = 19
+score = 87.5
+```
+
+The `=` is not "equals" in the maths sense. It means *put this value under this name*. From then on, writing `name` gives you back `"Fatou"`.
+
+**Types decide what you can do.**
+
+`"19"` and `19` look similar and behave completely differently. One is text, one is a number.
+
+```python
+"19" + "1"    # "191"  — text joined together
+19 + 1        # 20     — actual addition
+```
+
+This single confusion causes more beginner bugs than anything else. When something behaves strangely, ask what type it actually is:
+
+```python
+print(type(age))    # <class 'int'>
+```
+
+**A list holds many values in order.**
+
+```python
+scores = [87, 62, 95, 41]
+print(scores[0])     # 87  — counting starts at zero
+print(len(scores))   # 4
+scores.append(78)    # now [87, 62, 95, 41, 78]
+```
+
+Counting from zero feels wrong for about a week and then becomes invisible. Data arrives in lists constantly — rows in a file, results from a model, words in a sentence — so this is the shape you will handle most.
+
+**A loop does the same thing to every item.**
+
+```python
+for score in scores:
+    if score >= 50:
+        print(score, "pass")
+    else:
+        print(score, "fail")
+```
+
+The indentation is not decoration. In Python, the spaces are the grammar: indented lines are *inside* the block above them. Get the indentation wrong and you change what the program means.
+
+**A function is work you named so you can reuse it.**
+
+```python
+def grade(score):
+    if score >= 70:
+        return "distinction"
+    if score >= 50:
+        return "pass"
+    return "fail"
+
+print(grade(87))    # distinction
+```
+
+`def` defines it. `return` hands a value back to whoever called it. Once it exists you can use `grade(...)` anywhere without thinking about how it works again — which is the whole point, and the habit that separates code you can grow from code you have to rewrite.
+
+**Where this is going.** Loading a dataset, cleaning it and sending it to a model is all built out of exactly these five things — variables, types, lists, loops, functions — plus libraries other people wrote. There is no sixth secret idea waiting later.$md$,
+ $md$Python is the language most AI is written in. It was made to be easy to read.
+
+There are four things to learn first.
+
+**1. A variable is a name for a value.**
+
+```python
+name = "Fatou"
+age = 19
+```
+
+The `=` means "put this value under this name".
+
+**2. Text and numbers are different.**
+
+```python
+"19" + "1"    # "191"  — two pieces of text joined
+19 + 1        # 20     — real adding
+```
+
+This causes more beginner mistakes than anything else.
+
+**3. A list holds many values.**
+
+```python
+scores = [87, 62, 95, 41]
+print(scores[0])     # 87 — counting starts at 0, not 1
+```
+
+**4. A loop repeats work for every item.**
+
+```python
+for score in scores:
+    if score >= 50:
+        print(score, "pass")
+```
+
+The spaces at the start of a line matter in Python. They show what is inside what.
+
+**5. A function is work you gave a name.**
+
+```python
+def grade(score):
+    if score >= 50:
+        return "pass"
+    return "fail"
+```
+
+Everything in AI is built from these few things. There is no secret extra idea later.$md$,
+ $md$Open a free Python notebook in your browser — search for Google Colab, which needs no installation and works on a phone. Make a list of the ages of five people you know. Write a loop that prints each one and says whether they are over 18. If it fails, read the error message before changing anything: it names the line.$md$,
+ array['Python','Logic','Data types'], 18, 2),
+
+('da-spreadsheets', 'data_analytics', 2,
+ 'Making a spreadsheet answer a question',
+ 'Most professional analysis in the world still happens in a spreadsheet. Learn it properly.',
+ $md$There is a temptation to skip spreadsheets and go straight to something that sounds more serious. Resist it. Far more real decisions are made from a spreadsheet than from anything else, and an analyst who is genuinely fast in one is more useful than a beginner who has heard of five tools.
+
+**Rows are records. Columns are fields.**
+
+One row is one thing that happened — one sale, one patient, one day of rainfall. One column is one fact about it. Keep it that way and every tool you will ever use can read your data. Break it — merged cells, two tables side by side, a total in the middle — and you will spend longer fixing the shape than doing the analysis.
+
+Three rules that prevent most pain: one header row, no blank rows inside the data, and never store two things in one cell. `"Fatou Ceesay, Serrekunda"` should be two columns.
+
+**A formula is a question the sheet re-answers every time.**
+
+```
+=SUM(B2:B31)          total of the column
+=AVERAGE(B2:B31)      the mean
+=COUNTIF(C2:C31,"paid")   how many say "paid"
+=SUMIF(C2:C31,"paid",B2:B31)   total of only the paid ones
+```
+
+The `IF` family is where spreadsheets become analysis rather than arithmetic. `SUM` tells you the total; `SUMIF` tells you the total *for a group*, which is almost always the actual question.
+
+**The average is where beginners get fooled.**
+
+Nine customers spend D50 and one spends D5,000. The average is D545 — a number describing nobody in the dataset. Always look at the middle value too:
+
+```
+=MEDIAN(B2:B31)
+```
+
+When the average and the median are far apart, something unusual is pulling the average around, and the average will mislead whoever you show it to. Say so.
+
+**Pivot tables answer "by group" in seconds.**
+
+A pivot table takes a long table and summarises it however you ask: sales by month, patients by village, spend by category. It is the single highest-value thing to learn in a spreadsheet, and it takes about twenty minutes.
+
+Drag the thing you want to group by into rows, the thing you want to count or total into values. That is it. What would take an hour of formulas takes three drags.
+
+**Absolute references, and why your formula broke.**
+
+Copying `=B2*C1` down a column silently becomes `=B3*C2`, `=B4*C3`. If `C1` was meant to stay fixed — a tax rate, an exchange rate — write it `$C$1`. The dollar signs mean *do not move this when copied.* This one detail is behind a large share of wrong spreadsheets in the world.
+
+**Check your work before anyone else does.** Does the total match roughly what you expected? Are there blanks you did not notice? Does any row look impossible — an age of 400, a date in 1900? Find it yourself. Finding it in the meeting is expensive.$md$,
+ $md$Do not skip spreadsheets. Most real decisions in the world are still made from one.
+
+**Keep the shape simple.** One row is one thing that happened. One column is one fact about it. One header row at the top. No blank rows in the middle. Never put two things in one cell — "Fatou Ceesay, Serrekunda" should be two columns.
+
+**Formulas ask a question the sheet keeps answering:**
+
+```
+=SUM(B2:B31)                    add the column
+=AVERAGE(B2:B31)                the average
+=COUNTIF(C2:C31,"paid")         how many say paid
+=SUMIF(C2:C31,"paid",B2:B31)    total of only the paid ones
+```
+
+**Be careful with the average.** If nine people spend D50 and one spends D5,000, the average is D545. Nobody spent that. Also check the middle value with `=MEDIAN(...)`. If the average and the middle are very different, say so.
+
+**Learn pivot tables.** They answer "how much by group" in seconds — sales by month, patients by village. Drag what you want to group by into rows, and what you want to count into values. It takes twenty minutes to learn and saves hours.
+
+**One common mistake:** when you copy a formula down, the cells move with it. If one cell must stay fixed, write it `$C$1`.
+
+**Always check your own work** before showing anyone. Any blanks? Any impossible numbers, like an age of 400?$md$,
+ $md$Open Google Sheets on your phone or a computer. Record the price of five things at your local market, every day for one week — one row per day per item, three columns: date, item, price. At the end, use AVERAGE and MEDIAN on one item and see whether they differ. You now have a real dataset you collected, which is worth more than a downloaded one.$md$,
+ array['Excel','Formulas','Pivot tables','Data cleaning'], 18, 2),
+
+('cy-how-data-moves', 'cybersecurity', 2,
+ 'How data moves',
+ 'You cannot defend what you cannot picture. This is the picture.',
+ $md$Every attack you will ever study happens somewhere along the journey a message takes across a network. So the journey has to stop being abstract.
+
+**A request passes through many hands.**
+
+You open a website on your phone. Your phone talks to the router, the router to your network provider, the provider to other networks, until something reaches the server holding that site. The reply comes back the same way.
+
+Each of those hops is a machine that could be watched, misconfigured, or controlled by someone hostile. That is the entire reason encryption exists: you should assume the road is public.
+
+**An IP address is where. A port is which service.**
+
+The IP address identifies the machine. The port says which program on it you want.
+
+```
+443   HTTPS  — encrypted web
+80    HTTP   — unencrypted web
+22    SSH    — remote command line
+53    DNS    — name lookups
+```
+
+A machine with an open port is offering a service to whoever can reach it. Half of defensive work is knowing exactly which ports are open and why — because a service nobody remembers switching on is a service nobody is patching.
+
+**DNS turns names into addresses, and it is trusted more than it deserves.**
+
+You type a name; DNS answers with an address. If someone can answer that question before the real server does, you connect to their machine while the address bar still shows the name you typed. That is why DNS shows up in so many attacks: it is the step where a human-readable name becomes a destination, and humans only check the name.
+
+**HTTPS protects the contents, not the fact.**
+
+The padlock means the conversation is encrypted — someone watching the road sees that you talked to a server and roughly how much, but not what was said. It does **not** mean the site is honest. A criminal site can have a valid certificate in minutes and most do. "It has a padlock" is not evidence of anything except encryption.
+
+**Why so much sits behind a login.** On a public network, unencrypted traffic can be read by anyone else on it. This is not theoretical and it is not difficult. Assume any café or campus wifi is hostile, and notice which of the things you use every day still fall back to `http://`.
+
+**The defensive habit.** For any system you are responsible for, be able to answer three questions: what is listening, on which ports, and who can reach it? Most breaches involve something that was reachable and forgotten — not something clever.$md$,
+ $md$Every attack happens somewhere along the road a message takes. So you need to see that road clearly.
+
+**Your message passes through many machines.** Your phone, your router, your network provider, other networks, then the server. Any of them could be watched or controlled by someone bad. That is why we encrypt things — assume the road is public.
+
+**An IP address says which machine. A port says which service on it.**
+
+```
+443   HTTPS  — encrypted web
+80    HTTP   — web with no protection
+22    SSH    — remote control
+53    DNS    — turning names into addresses
+```
+
+An open port means the machine is offering a service to anyone who can reach it. A big part of defence is knowing which ports are open and why.
+
+**DNS turns a name into an address.** If an attacker answers that question first, you go to their machine while the name in your browser still looks correct. That is why DNS is used in many attacks.
+
+**The padlock only means encrypted.** It does not mean the website is honest. Criminals can get a padlock easily. Never trust a site just because it has one.
+
+**On public wifi, anything not encrypted can be read by others nearby.** This is easy to do. Treat café and campus wifi as unsafe.
+
+**The habit to build:** for any system you look after, know what is listening, on which ports, and who can reach it. Most break-ins involve something reachable that everyone forgot about.$md$,
+ $md$On your own phone or computer, run `ping example.com` and then look up how to see the address it resolved to. Then list every device on your home network you can name. Anything you cannot name is worth asking about — this is the exact question a defender asks about a company network, at a size you can actually finish.$md$,
+ array['Networking','DNS','Ports','Threat awareness'], 16, 2),
+
+('gd-typography', 'graphic_design', 2,
+ 'Choosing type people can actually read',
+ 'Type is most of design. Get it right and plain work looks professional.',
+ $md$Look at any design you admire and remove the images. What is left is type, and it is usually carrying the work. Typography is where amateur and professional separate fastest, and it is almost entirely learnable rules rather than talent.
+
+**Two typefaces. At most.**
+
+The instinct is to use many. Every extra typeface is another thing that has to agree with the others, and beginners lose that fight. One for headings, one for body text, and if you are unsure, use one family at different weights. That always looks deliberate.
+
+**Choose for the job, not the mood.**
+
+A display face for a heading can be expressive — it appears once, large, and is read in a glance. Body text is read for minutes, so it needs to disappear: generous letter shapes, clear differences between similar characters, nothing decorative. A face that looks beautiful at 60px can be unreadable at 14px, and most beginner mistakes are exactly this substitution.
+
+**Size and line length.**
+
+Body text wants to be around 16px on screen. Smaller looks tidy on your large monitor and fails on a phone in sunlight — which is where most Gambian users will read it.
+
+Line length matters more than people expect: aim for roughly 60 to 75 characters per line. Longer and the eye loses its place returning to the left edge. This is why text on a wide screen should sit in a column rather than spanning the whole width.
+
+**Line spacing is the fastest improvement available.**
+
+Default line spacing is usually too tight for body text. Around 1.5 times the font size makes a paragraph noticeably easier to read, and it is a single setting. If you change one thing today, change this.
+
+Headings want the opposite — tighter spacing, because large text with loose spacing falls apart into separate lines.
+
+**Hierarchy through contrast, not through many sizes.**
+
+Three sizes is usually enough: heading, subheading, body. Make them clearly different — not 18px and 20px, which reads as an accident. Weight and space do as much work as size; a bold 16px line above a paragraph is a subheading without needing to be bigger at all.
+
+**Alignment: pick an edge and keep it.**
+
+Left-aligned text with a ragged right edge is the most readable arrangement for long text in English. Centre alignment is for short things — a title, an invitation. Centring a paragraph gives both edges a jagged shape and makes every line harder to start.
+
+Justified text, with both edges straight, opens ugly rivers of white space unless the software hyphenates well. Avoid it in narrow columns.
+
+**Contrast is an accessibility requirement, not a preference.** Light grey on white looks elegant on your screen and disappears on a cracked phone in daylight. Dark text on a light background, or the reverse, with real separation between them. If you have to lean in, it has failed.
+
+**The test.** Print it, or open it on the cheapest phone you can find, and hold it at arm's length. Everything important should still be readable. Most design problems announce themselves immediately at arm's length.$md$,
+ $md$Type is most of design. Get it right and even simple work looks professional.
+
+**Use two typefaces at most.** One for headings, one for the text. If you are unsure, use one and change its weight. Many typefaces almost always looks worse.
+
+**Choose for the job.** A fancy typeface can work for a big heading, seen once. Text people read for minutes must be simple and get out of the way. Something beautiful at large size can be unreadable at small size.
+
+**Size:** body text should be about 16px on screen. Smaller looks neat on your computer and fails on a phone in the sun — which is where most people will read it.
+
+**Line length:** about 60 to 75 letters per line. Longer and the eye gets lost coming back to the left side.
+
+**Line spacing is the quickest fix there is.** Set it to about 1.5 times the text size. If you change one thing today, change this.
+
+**Use three sizes, not seven:** heading, subheading, body. Make them clearly different. 18px next to 20px looks like a mistake.
+
+**Alignment:** line the text up on the left. Centre only short things like a title. Centring a paragraph makes every line harder to start.
+
+**Contrast is not a taste question.** Light grey on white disappears on a cheap phone in daylight. Use dark on light, or light on dark, with a real difference.
+
+**The test:** open it on the cheapest phone you can find and hold it at arm's length. If you cannot read it, it has failed.$md$,
+ $md$Find something you made before, or any flyer near you. Change only three things: set the body text to about 16px, set line spacing to 1.5, and reduce it to two typefaces. Change nothing else — no new colours, no new images. Put the before and after side by side. The difference is typography alone.$md$,
+ array['Typography','Layout','Design principles'], 16, 2)
 
 on conflict (id) do update set
   path_id = excluded.path_id, stage = excluded.stage, title = excluded.title,
