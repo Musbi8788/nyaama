@@ -1,21 +1,62 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { SLOTS, type Answers } from "@/lib/data/interview";
+import { LogoMark } from "@/components/brand/Logo";
+import { SLOTS, type Answers, type Slot } from "@/lib/data/interview";
 import { completeInterview } from "../actions";
 import { cn } from "@/lib/utils/cn";
 
 const STORAGE_KEY = "nyaama.interview";
 
+/**
+ * How long the coach appears to be composing before the next question lands.
+ *
+ * The AI lead-in usually returns faster than this, and a line that appears
+ * instantly reads as a form advancing rather than someone answering. The
+ * floor buys the pause that makes it feel like a reply; the ceiling means a
+ * slow or dead request never holds the learner up, because the static line
+ * is always ready to stand in.
+ */
+const COMPOSING_MIN_MS = 700;
+const COMPOSING_MAX_MS = 2600;
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+/** What the learner said, in their own words, for their side of the transcript. */
+function replyText(slot: Slot, answer: Answers[string] | undefined): string {
+  if (!answer) return "";
+  const labels = slot.options
+    .filter((o) => answer.options.includes(o.id))
+    .map((o) => o.label);
+  const typed = answer.text?.trim();
+  if (typed) labels.push(typed);
+  return labels.join(" · ");
+}
+
 export function Interview() {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
-  const [line, setLine] = useState(SLOTS[0].coachLine);
-  const [fading, setFading] = useState(false);
+  /** Lead-in actually shown for each slot, so the transcript stays truthful. */
+  const [lines, setLines] = useState<Record<number, string>>({
+    0: SLOTS[0].coachLine,
+  });
   const [pending, startTransition] = useTransition();
-  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  const endRef = useRef<HTMLDivElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
+  const restored = useRef(false);
+
+  // Derived, not stored: the coach is composing exactly while the current
+  // slot has no line yet. Holding it as state would be a second source of
+  // truth for one fact, and a way for the dots to outlive the answer.
+  const composing = !lines[index];
 
   const slot = SLOTS[index];
   const answer = answers[slot.id] ?? { options: [] };
@@ -29,12 +70,14 @@ export function Interview() {
   // client and desynchronise hydration. Restoring after mount is correct here.
   useEffect(() => {
     const saved = sessionStorage.getItem(STORAGE_KEY);
+    restored.current = true;
     if (!saved) return;
     try {
-      const { index: i, answers: a } = JSON.parse(saved);
+      const { index: i, answers: a, lines: l } = JSON.parse(saved);
       /* eslint-disable react-hooks/set-state-in-effect */
       if (typeof i === "number" && i < SLOTS.length) setIndex(i);
       if (a && typeof a === "object") setAnswers(a);
+      if (l && typeof l === "object") setLines((prev) => ({ ...prev, ...l }));
       /* eslint-enable react-hooks/set-state-in-effect */
     } catch {
       sessionStorage.removeItem(STORAGE_KEY);
@@ -42,14 +85,38 @@ export function Interview() {
   }, []);
 
   useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ index, answers }));
-  }, [index, answers]);
+    if (!restored.current) return;
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ index, answers, lines }),
+    );
+  }, [index, answers, lines]);
 
-  // Personalised lead-in. The static line is already showing, so a slow or
-  // failed request simply leaves it in place.
+  // The coach answers what the learner just said. The static line is already
+  // written, so a slow, failed or rate-limited request costs nothing but the
+  // personalisation — the conversation never stalls on it.
   useEffect(() => {
-    if (index === 0) return;
+    if (index === 0 || lines[index]) return;
+
     let cancelled = false;
+    const started = Date.now();
+
+    const settle = (line: string) => {
+      if (cancelled) return;
+      const waited = Date.now() - started;
+      const hold = prefersReducedMotion()
+        ? 0
+        : Math.max(0, COMPOSING_MIN_MS - waited);
+      setTimeout(() => {
+        if (cancelled) return;
+        setLines((prev) => ({ ...prev, [index]: line }));
+      }, hold);
+    };
+
+    const giveUp = setTimeout(
+      () => settle(SLOTS[index].coachLine),
+      COMPOSING_MAX_MS,
+    );
 
     (async () => {
       try {
@@ -59,36 +126,67 @@ export function Interview() {
           body: JSON.stringify({ slotIndex: index, answers }),
         });
         const data = await res.json();
-        if (!cancelled && data.line) setLine(data.line);
+        clearTimeout(giveUp);
+        settle(data.line || SLOTS[index].coachLine);
       } catch {
-        /* static line stands */
+        clearTimeout(giveUp);
+        settle(SLOTS[index].coachLine);
       }
     })();
 
     return () => {
       cancelled = true;
+      clearTimeout(giveUp);
     };
-    // Deliberately keyed on index only: we want one call per question.
+    // Keyed on index only: one call per question, never one per keystroke.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
-  // Move focus to the new question so screen readers and keyboard users
-  // are not left at the bottom of the previous one.
+  // Keep the newest turn in view, the way a messaging app does.
   useEffect(() => {
-    headingRef.current?.focus();
-  }, [index]);
-
-  function toggle(optionId: string) {
-    setAnswers((prev) => {
-      const current = prev[slot.id]?.options ?? [];
-      const options =
-        slot.type === "single"
-          ? [optionId]
-          : current.includes(optionId)
-            ? current.filter((id) => id !== optionId)
-            : [...current, optionId];
-      return { ...prev, [slot.id]: { ...prev[slot.id], options } };
+    endRef.current?.scrollIntoView({
+      behavior: prefersReducedMotion() ? "auto" : "smooth",
+      block: "end",
     });
+  }, [index, composing]);
+
+  // Once the question has landed, put focus on the answers so a keyboard or
+  // screen-reader user is at the live end of the conversation, not the top.
+  useEffect(() => {
+    if (composing) return;
+    composerRef.current?.focus();
+  }, [index, composing]);
+
+  function advance(from: number) {
+    if (from === SLOTS.length - 1) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      startTransition(() => {
+        void completeInterview(answers);
+      });
+      return;
+    }
+    setIndex(from + 1);
+  }
+
+  function choose(optionId: string) {
+    const current = answers[slot.id]?.options ?? [];
+
+    if (slot.type === "multi") {
+      const options = current.includes(optionId)
+        ? current.filter((id) => id !== optionId)
+        : [...current, optionId];
+      setAnswers((prev) => ({
+        ...prev,
+        [slot.id]: { ...prev[slot.id], options },
+      }));
+      return;
+    }
+
+    // Single choice sends the turn straight away. Asking someone to pick an
+    // answer and then press Continue is the survey feeling we are removing.
+    const next = { ...answers, [slot.id]: { ...answers[slot.id], options: [optionId] } };
+    setAnswers(next);
+    if (!slot.freeText) advance(index);
   }
 
   function setText(text: string) {
@@ -98,132 +196,208 @@ export function Interview() {
     }));
   }
 
-  function go(next: number) {
-    setFading(true);
-    setTimeout(() => {
-      if (next < index) setLine(SLOTS[next].coachLine);
-      setIndex(next);
-      setFading(false);
-    }, 160);
-  }
-
-  function submit() {
-    sessionStorage.removeItem(STORAGE_KEY);
-    startTransition(() => {
-      void completeInterview(answers);
+  /** Take back the last thing you said, and let the coach ask again. */
+  function undo() {
+    const target = index - 1;
+    setLines((prev) => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
     });
+    setIndex(target);
   }
 
   if (pending) return <Thinking />;
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-10">
-        <div className="flex items-center justify-between text-xs text-muted">
-          <span>
-            Question {index + 1} of {SLOTS.length}
-          </span>
-          <span>{Math.round((index / SLOTS.length) * 100)}%</span>
-        </div>
-        <div
-          role="progressbar"
-          aria-valuenow={index + 1}
-          aria-valuemin={1}
-          aria-valuemax={SLOTS.length}
-          aria-label="Interview progress"
-          className="mt-2 h-1 overflow-hidden rounded-pill bg-white/10"
-        >
+    <div className="mx-auto flex min-h-[calc(100dvh-8rem)] max-w-2xl flex-col">
+      <Progress index={index} />
+
+      {/* The transcript. Polite, so each new coach turn is announced once
+          rather than the whole conversation being re-read. */}
+      <div className="flex-1 space-y-6 py-8" aria-live="polite" aria-atomic="false">
+        {SLOTS.slice(0, index + 1).map((s, i) => {
+          const line = lines[i];
+          const said = replyText(s, answers[s.id]);
+          const isCurrent = i === index;
+
+          return (
+            <div key={s.id} className="space-y-6">
+              {line ? (
+                <Coach>
+                  <p className="text-yellow">{line}</p>
+                  <p
+                    className={cn(
+                      "mt-2 font-display leading-snug text-text",
+                      isCurrent ? "text-2xl sm:text-3xl" : "text-lg",
+                    )}
+                  >
+                    {s.question}
+                  </p>
+                </Coach>
+              ) : null}
+
+              {said && !isCurrent && <Said>{said}</Said>}
+            </div>
+          );
+        })}
+
+        {composing && <Composing />}
+        <div ref={endRef} />
+      </div>
+
+      {/* The composer: what you can say next. */}
+      {!composing && (
+        <div className="sticky bottom-0 -mx-6 border-t border-line bg-navy/95 px-6 pb-6 pt-5 backdrop-blur supports-[backdrop-filter]:bg-navy/80">
           <div
-            className="h-full rounded-pill bg-yellow transition-[width] duration-500 ease-out"
-            style={{ width: `${((index + 1) / SLOTS.length) * 100}%` }}
-          />
-        </div>
-      </div>
-
-      <div
-        className={cn(
-          "transition-opacity duration-150",
-          fading ? "opacity-0" : "opacity-100",
-        )}
-      >
-        <p className="text-sm text-yellow">{line}</p>
-
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="mt-3 font-display text-3xl leading-snug text-text outline-none sm:text-4xl"
-        >
-          {slot.question}
-        </h1>
-
-        <div
-          role={slot.type === "single" ? "radiogroup" : "group"}
-          aria-label={slot.question}
-          className="mt-8 flex flex-wrap gap-2.5"
-        >
-          {slot.options.map((option) => {
-            const selected = answer.options.includes(option.id);
-            return (
-              <button
-                key={option.id}
-                type="button"
-                role={slot.type === "single" ? "radio" : "checkbox"}
-                aria-checked={selected}
-                onClick={() => toggle(option.id)}
-                className={cn(
-                  "inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 py-2 text-sm transition-colors",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
-                  selected
-                    ? "border-transparent bg-yellow font-medium text-navy"
-                    : "border-line text-muted hover:border-line-strong hover:text-text",
-                )}
-              >
-                {selected && slot.type === "multi" && (
-                  <Check size={14} aria-hidden />
-                )}
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {slot.freeText && (
-          <div className="mt-6">
-            <label
-              htmlFor="freetext"
-              className="mb-2 block text-sm text-muted"
-            >
-              {slot.freeText}
-            </label>
-            <input
-              id="freetext"
-              value={answer.text ?? ""}
-              onChange={(e) => setText(e.target.value)}
-              maxLength={200}
-              className="h-12 w-full rounded-xl border border-line bg-surface px-4 text-text focus:border-yellow/60 focus:outline-none focus:ring-2 focus:ring-yellow/60"
-            />
+            ref={composerRef}
+            tabIndex={-1}
+            role={slot.type === "single" ? "radiogroup" : "group"}
+            aria-label={slot.question}
+            className="flex flex-wrap gap-2.5 outline-none"
+          >
+            {slot.options.map((option) => {
+              const selected = answer.options.includes(option.id);
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  role={slot.type === "single" ? "radio" : "checkbox"}
+                  aria-checked={selected}
+                  onClick={() => choose(option.id)}
+                  className={cn(
+                    "inline-flex min-h-11 items-center gap-2 rounded-pill border px-4 py-2 text-sm",
+                    "transition-[colors,transform] active:scale-[0.97] motion-reduce:active:scale-100",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow focus-visible:ring-offset-2 focus-visible:ring-offset-navy",
+                    selected
+                      ? "border-transparent bg-yellow font-medium text-navy"
+                      : "border-line text-muted hover:border-line-strong hover:text-text",
+                  )}
+                >
+                  {selected && slot.type === "multi" && (
+                    <Check size={14} aria-hidden />
+                  )}
+                  {option.label}
+                </button>
+              );
+            })}
           </div>
-        )}
+
+          {slot.freeText && (
+            <div className="mt-3">
+              <label htmlFor="freetext" className="sr-only">
+                {slot.freeText}
+              </label>
+              <input
+                id="freetext"
+                value={answer.text ?? ""}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && answered) advance(index);
+                }}
+                placeholder={slot.freeText}
+                maxLength={200}
+                className="h-12 w-full rounded-xl border border-line bg-surface px-4 text-text placeholder:text-muted focus:border-yellow/60 focus:outline-none focus:ring-2 focus:ring-yellow/60"
+              />
+            </div>
+          )}
+
+          <div className="mt-4 flex items-center justify-between gap-4">
+            {index > 0 ? (
+              <button
+                type="button"
+                onClick={undo}
+                className="inline-flex items-center gap-1.5 rounded-lg text-sm text-muted transition-colors hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow"
+              >
+                <Undo2 size={14} aria-hidden />
+                Change my last answer
+              </button>
+            ) : (
+              <span />
+            )}
+
+            {/* Multi-select and free text need a send: we cannot know when
+                someone has finished choosing. A single choice sends itself. */}
+            {(slot.type === "multi" || slot.freeText) && (
+              <Button size="md" disabled={!answered} onClick={() => advance(index)}>
+                {last ? "See my path" : "Send"}
+                <ArrowRight size={16} aria-hidden />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Progress({ index }: { index: number }) {
+  return (
+    <div className="sticky top-0 z-10 -mx-6 bg-navy/95 px-6 pb-3 pt-4 backdrop-blur supports-[backdrop-filter]:bg-navy/80">
+      <div className="flex items-center justify-between text-xs text-muted">
+        <span>Your career coach</span>
+        <span>
+          {index + 1} of {SLOTS.length}
+        </span>
       </div>
+      <div
+        role="progressbar"
+        aria-valuenow={index + 1}
+        aria-valuemin={1}
+        aria-valuemax={SLOTS.length}
+        aria-label="Interview progress"
+        className="mt-2 h-1 overflow-hidden rounded-pill bg-white/10"
+      >
+        <div
+          className="h-full rounded-pill bg-yellow transition-[width] duration-500 ease-out"
+          style={{ width: `${((index + 1) / SLOTS.length) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
-      <div className="mt-12 flex items-center justify-between">
-        <Button
-          variant="ghost"
-          onClick={() => go(index - 1)}
-          disabled={index === 0}
-        >
-          <ArrowLeft size={16} aria-hidden />
-          Back
-        </Button>
+/** The coach's turn: avatar, then what they said. */
+function Coach({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3 motion-safe:animate-[nyaama-rise_260ms_var(--ease-nyaama)]">
+      <LogoMark size={32} className="mt-0.5" />
+      <div className="min-w-0 flex-1 rounded-[20px] rounded-tl-md border border-line bg-surface px-5 py-4">
+        {children}
+      </div>
+    </div>
+  );
+}
 
-        <Button
-          size="lg"
-          disabled={!answered}
-          onClick={() => (last ? submit() : go(index + 1))}
-        >
-          {last ? "See my path" : "Continue"}
-          <ArrowRight size={18} aria-hidden />
-        </Button>
+/** The learner's turn, on their own side. */
+function Said({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex justify-end motion-safe:animate-[nyaama-rise_260ms_var(--ease-nyaama)]">
+      <p className="max-w-[85%] rounded-[20px] rounded-br-md bg-yellow px-5 py-3 text-right text-sm font-medium text-navy">
+        {children}
+      </p>
+    </div>
+  );
+}
+
+/** Three dots, because someone is answering you. */
+function Composing() {
+  return (
+    <div className="flex gap-3">
+      <LogoMark size={32} className="mt-0.5" />
+      <div
+        className="flex items-center gap-1.5 rounded-[20px] rounded-tl-md border border-line bg-surface px-5 py-4"
+        role="status"
+      >
+        <span className="sr-only">Your coach is typing</span>
+        {[0, 1, 2].map((i) => (
+          <span
+            key={i}
+            aria-hidden
+            className="h-1.5 w-1.5 rounded-full bg-muted motion-safe:animate-[nyaama-typing_1.2s_ease-in-out_infinite]"
+            style={{ animationDelay: `${i * 160}ms` }}
+          />
+        ))}
       </div>
     </div>
   );

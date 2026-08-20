@@ -88,3 +88,17 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* The coach composing a reply, in the discovery interview */
+@keyframes nyaama-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
